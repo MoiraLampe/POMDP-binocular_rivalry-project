@@ -1122,6 +1122,25 @@ def plot_pomdp_utility(utility):
     plt.text((right + 1) / 2 - 0.07, 10, 'Delete')
     plt.show()
 
+import matplotlib.pyplot as plt
+
+def plot_pomdp_utility_test(utility):
+    action_0 = utility['0'][0]
+    action_1 = utility['1'][0]
+
+    left = (action_0[0] - action_1[0]) / (action_0[0] - action_1[0] + action_1[1] - action_0[1])
+
+    colors = ['g', 'b']
+    for action in utility:
+        for value in utility[action]:
+            plt.plot(value, color=colors[int(action)])
+    
+    plt.vlines([left], -20, 10, linestyles='dashed', colors='c')
+    plt.ylim(-20, 13)
+    plt.xlim(0, 1)
+    plt.text(left / 2 - 0.05, 10, 'Action 0')
+    plt.text((left + 1) / 2 - 0.07, 10, 'Action 1')
+    plt.show()
 
     
 # %%

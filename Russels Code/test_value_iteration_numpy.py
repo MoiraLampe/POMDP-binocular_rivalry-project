@@ -295,28 +295,97 @@ def pomdp_value_iteration(pomdp, epsilon=0.1):
             if pomdp.max_difference(U, prev_U) < epsilon * (1 - pomdp.gamma) / pomdp.gamma:
                 return U
 
-# Initial Conditions
+def pomdp_value_iteration_numpy(pomdp, epsilon=0.1):
+    """Solving a POMDP by value iteration."""
 
-p_stay = 0.89
+    U = {'': np.zeros((1, len(pomdp.states)))}
+    count = 0
+    while True:
+        count += 1
+        prev_U = U
+        values = [val for action in U for val in U[action]]
+        value_matxs = []
+        for i in values:
+            for j in values:
+                value_matxs.append(np.array([i, j]))
 
-# transition probability --> prob of staying is p_stay 
-t_prob = [[p_stay, 1-p_stay],[p_stay,1-p_stay]]
+        if count < 10:
+            print(f"values: {values}")
+            print(f"value_matxs: {value_matxs}")
+        U1 = defaultdict(list)
+        for action in pomdp.actions:
+            for u in value_matxs:
+                u1 = np.matmul(np.matmul(pomdp.t_prob[int(action)], np.multiply(pomdp.e_prob[int(action)], u.T)), np.array([[1], [1]]))
+                u1 = np.add(np.multiply(pomdp.gamma, u1.T), [pomdp.rewards[int(action)]])
+                U1[action].append(u1[0])
 
-# evidence function P(e|s) (still figuring this one out)
-e_prob = [[[0.6, 0.4], [0.4, 0.6]]]
+        U = pomdp.remove_dominated_plans_fast(U1)
+        # replace with U = pomdp.remove_dominated_plans(U1) for accurate calculations
+        
+        if count > 10:
+            if pomdp.max_difference(U, prev_U) < epsilon * (1 - pomdp.gamma) / pomdp.gamma:
+                return U
 
-# for now fixed reward function for each state action pair
-rewards = [[1.5, 1.0], [2.0, 1.5]]
+# # Initial Conditions
 
-# discount factor --> very low as for now we want to assume that immediate rewards are much more important than long-term rewards
-gamma = 0.05
+# p_stay = 0.89
 
-# actions
-actions = ('0', '1') #two actions 
+# # transition probability --> prob of staying is p_stay 
+# t_prob = [[p_stay, 1-p_stay],[p_stay,1-p_stay]]
 
-# states
-states = ('0', '1') #two states
+# # evidence function P(e|s) (still figuring this one out)
+# e_prob = [[[0.6, 0.4], [0.4, 0.6]]]
+
+# # for now fixed reward function for each state action pair
+# rewards = [[1.5, 1.0], [2.0, 1.5]]
+
+# # discount factor --> very low as for now we want to assume that immediate rewards are much more important than long-term rewards
+# gamma = 0.05
+
+# # actions
+# actions = ('0', '1') #two actions 
+
+# # states
+# states = ('0', '1') #two states
+
+# pomdp = POMDP(actions, t_prob, e_prob, rewards, states, gamma)
+
+# # transition probability P(s'|s,a)
+# t_prob = [[[0.9, 0.1], [0.1, 0.9]], [[0.1, 0.9], [0.9, 0.1]]]
+# # evidence function P(e|s)
+# e_prob = [[[0.6, 0.4], [0.4, 0.6]], [[0.6, 0.4], [0.4, 0.6]]]
+# # reward function
+# rewards = [[0.0, 0.0], [1.0, 1.0]]
+# # discount factor
+# gamma = 0.95
+# # actions
+# actions = ('0', '1')
+# # states
+# states = ('0', '1')
+
+# pomdp = POMDP(actions, t_prob, e_prob, rewards, states, gamma)
+
+
+# transition function P(s'|s,a)
+t_prob = [[[0.65, 0.35], [0.65, 0.35]], [[0.65, 0.35], [0.65, 0.35]], [[1.0, 0.0], [0.0, 1.0]]]
+# evidence function P(e|s)
+e_prob = [[[0.5, 0.5], [0.5, 0.5]], [[0.5, 0.5], [0.5, 0.5]], [[0.8, 0.2], [0.3, 0.7]]] #here the evidence seems to already be predefined! How do we define it gradually? Or do I just predefine? 
+# reward function
+rewards = [[5, -10], [-20, 5], [-1, -1]]
+
+gamma = 0.95
+actions = ('0', '1', '2')
+states = ('0', '1')
 
 pomdp = POMDP(actions, t_prob, e_prob, rewards, states, gamma)
+
+utility = pomdp_value_iteration_numpy(pomdp, epsilon=0.1)
+
+%matplotlib inline
+
+
+from notebook import psource, pseudocode, plot_pomdp_utility
+plot_pomdp_utility(utility)
+
 
 #%%
