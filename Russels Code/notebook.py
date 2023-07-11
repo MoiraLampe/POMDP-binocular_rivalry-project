@@ -1104,8 +1104,11 @@ def gaussian_kernel(l=5, sig=1.0):
 # Plots utility function for a POMDP
 def plot_pomdp_utility(utility):
     save = utility['0'][0]
+    print(save)
     delete = utility['1'][0]
+    print(delete)
     ask_save = utility['2'][0]
+    print(ask_save)
     ask_delete = utility['2'][-1]
     left = (save[0] - ask_save[0]) / (save[0] - ask_save[0] + ask_save[1] - save[1])
     right = (delete[0] - ask_delete[0]) / (delete[0] - ask_delete[0] + ask_delete[1] - delete[1])
@@ -1113,6 +1116,7 @@ def plot_pomdp_utility(utility):
     colors = ['g', 'b', 'k']
     for action in utility:
         for value in utility[action]:
+            print(value)
             plt.plot(value, color=colors[int(action)])
     plt.vlines([left, right], -20, 10, linestyles='dashed', colors='c')
     plt.ylim(-20, 13)
@@ -1124,23 +1128,30 @@ def plot_pomdp_utility(utility):
 
 import matplotlib.pyplot as plt
 
-def plot_pomdp_utility_test(utility):
-    action_0 = utility['0'][0]
-    action_1 = utility['1'][0]
+# def plot_pomdp_utility_test(utility):
+#     action_0 = utility['0'][0]
+#     action_1 = utility['1'][0]
 
-    left = (action_0[0] - action_1[0]) / (action_0[0] - action_1[0] + action_1[1] - action_0[1])
+#     left = (action_0[0] - action_1[0]) / (action_0[0] - action_1[0] + action_1[1] - action_0[1])
 
-    colors = ['g', 'b']
-    for action in utility:
-        for value in utility[action]:
-            plt.plot(value, color=colors[int(action)])
+#     colors = ['g', 'b']
+#     for action in utility:
+#         for value in utility[action]:
+#             plt.plot(value, color=colors[int(action)])
     
-    plt.vlines([left], -20, 10, linestyles='dashed', colors='c')
-    plt.ylim(-20, 13)
-    plt.xlim(0, 1)
-    plt.text(left / 2 - 0.05, 10, 'Action 0')
-    plt.text((left + 1) / 2 - 0.07, 10, 'Action 1')
-    plt.show()
+#     plt.vlines([left], -20, 10, linestyles='dashed', colors='c')
+#     plt.ylim(-20, 13)
+#     plt.xlim(0, 1)
+#     plt.text(left / 2 - 0.05, 10, 'Action 0')
+#     plt.text((left + 1) / 2 - 0.07, 10, 'Action 1')
+#     plt.show()
+
+
+# def plot_pomdp_utility_test(utility):
+
+#     left = (save[0] - ask_save[0]) / (save[0] - ask_save[0] + ask_save[1] - save[1])
+#     right = (delete[0] - ask_delete[0]) / (delete[0] - ask_delete[0] + ask_delete[1] - delete[1])
+
 
     
 # %%
